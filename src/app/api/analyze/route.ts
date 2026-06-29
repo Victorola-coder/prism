@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { formatUrl, extractDomain } from "@/lib/utils"
+import { runAnalysis } from "@/lib/analyzer"
 
 export async function POST(request: NextRequest) {
   try {
-    const { url } = await request.json()
+    const { url, takeScreenshot = false } = await request.json()
 
     if (!url || typeof url !== "string") {
       return NextResponse.json(
@@ -109,6 +110,14 @@ export async function POST(request: NextRequest) {
         pageTitle: extractDomain(formattedUrl),
         status: "pending",
       },
+    })
+
+    runAnalysis({
+      url: formattedUrl,
+      analysisId: analysis.id,
+      takeScreenshot,
+    }).catch((error) => {
+      console.error(`Background analysis failed for ${formattedUrl}:`, error)
     })
 
     return NextResponse.json({
