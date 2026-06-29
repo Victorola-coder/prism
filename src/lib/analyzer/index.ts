@@ -133,6 +133,25 @@ export async function runAnalysis(options: AnalysisOptions) {
       }
     }
 
+    let lighthouseResult: Awaited<ReturnType<typeof import("./lighthouse").runLighthouse>> | null = null
+    try {
+      const { runLighthouse } = await import("./lighthouse")
+      lighthouseResult = await runLighthouse(url)
+    } catch {
+      // Lighthouse failed, skip it
+    }
+
+    const finalScore = lighthouseResult
+      ? Math.round(
+          (overallScore +
+            lighthouseResult.performance +
+            lighthouseResult.accessibility +
+            lighthouseResult.seo +
+            lighthouseResult.bestPractices) /
+            5,
+        )
+      : overallScore
+
     await prisma.$transaction(async (tx) => {
       await tx.analysis.update({
         where: { id: analysisId },
@@ -140,7 +159,7 @@ export async function runAnalysis(options: AnalysisOptions) {
           status: "completed",
           pageTitle,
           screenshotUrl,
-          overallScore,
+          overallScore: finalScore,
         },
       })
 
@@ -154,6 +173,22 @@ export async function runAnalysis(options: AnalysisOptions) {
             icon: t.icon,
             confidence: t.confidence,
           })),
+        })
+      }
+
+      if (lighthouseResult) {
+        await tx.lighthouseResult.create({
+          data: {
+            analysisId,
+            performance: lighthouseResult.performance,
+            accessibility: lighthouseResult.accessibility,
+            seo: lighthouseResult.seo,
+            bestPractices: lighthouseResult.bestPractices,
+            lcp: lighthouseResult.lcp,
+            fid: lighthouseResult.fid,
+            cls: lighthouseResult.cls,
+            raw: lighthouseResult.raw ? JSON.parse(JSON.stringify(lighthouseResult.raw)) : {},
+          },
         })
       }
 
