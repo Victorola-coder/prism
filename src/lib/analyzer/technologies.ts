@@ -512,7 +512,282 @@ export const DETECTION_RULES: DetectionRule[] = [
     },
   },
 
-  // --- State Management ---
+  // --- Backend Frameworks ---
+  {
+    name: "Express",
+    category: "Backend Framework",
+    icon: "express",
+    detection: {
+      headers: { "x-powered-by": /Express/i },
+    },
+  },
+  {
+    name: "Next.js API Routes",
+    category: "Backend Framework",
+    icon: "nextjs",
+    detection: {
+      headers: { "x-nextjs": /./i },
+    },
+  },
+  {
+    name: "tRPC",
+    category: "Backend Framework",
+    icon: "trpc",
+    detection: {
+      headers: { "x-trpc": /./i },
+      html: /\/_trpc\//i,
+    },
+  },
+  {
+    name: "GraphQL",
+    category: "Backend Framework",
+    icon: "graphql",
+    detection: {
+      url: /\/graphql/i,
+      html: /<link[^>]+href="[^"]*\/graphql/i,
+    },
+  },
+  {
+    name: "Hasura",
+    category: "Backend Framework",
+    icon: "hasura",
+    detection: {
+      headers: { "x-hasura": /./i },
+    },
+  },
+  {
+    name: "Supabase",
+    category: "Backend",
+    icon: "supabase",
+    detection: {
+      script: /supabase/i,
+      window: /supabase/i,
+    },
+  },
+  {
+    name: "Django",
+    category: "Backend Framework",
+    icon: "django",
+    detection: {
+      headers: { server: /WSGIServer|gunicorn/i, "x-frame-options": /DENY|SAMEORIGIN/i },
+      html: /csrfmiddlewaretoken/i,
+    },
+  },
+  {
+    name: "Ruby on Rails",
+    category: "Backend Framework",
+    icon: "rails",
+    detection: {
+      headers: { "x-powered-by": /Phusion|Passenger|Rails/i, server: /Passenger/i },
+      html: /csrf-param|data-remote="true"/i,
+    },
+  },
+  {
+    name: "Laravel",
+    category: "Backend Framework",
+    icon: "laravel",
+    detection: {
+      headers: { "x-powered-by": /Laravel/i },
+      html: /__livewire|csrf-token/i,
+    },
+  },
+  {
+    name: "Spring Boot",
+    category: "Backend Framework",
+    icon: "spring",
+    detection: {
+      headers: { "x-application-context": /./i },
+    },
+  },
+  {
+    name: "Flask",
+    category: "Backend Framework",
+    icon: "flask",
+    detection: {
+      headers: { server: /Werkzeug/i },
+    },
+  },
+  {
+    name: "FastAPI",
+    category: "Backend Framework",
+    icon: "fastapi",
+    detection: {
+      headers: { server: /uvicorn/i },
+    },
+  },
+
+  // --- API & Data ---
+  {
+    name: "REST API",
+    category: "API",
+    icon: "api",
+    detection: {
+      headers: { "content-type": /application\/json/i },
+    },
+  },
+  {
+    name: "Prisma",
+    category: "ORM",
+    icon: "prisma",
+    detection: {
+      script: /@prisma\/client/i,
+    },
+  },
+  {
+    name: "PostgreSQL",
+    category: "Database",
+    icon: "postgres",
+    detection: {
+      headers: { server: /postgres/i },
+    },
+  },
+  {
+    name: "Redis",
+    category: "Database",
+    icon: "redis",
+    detection: {
+      headers: { server: /redis/i },
+    },
+  },
+  {
+    name: "MongoDB",
+    category: "Database",
+    icon: "mongodb",
+    detection: {
+      headers: { server: /mongodb/i },
+    },
+  },
+  {
+    name: "MySQL",
+    category: "Database",
+    icon: "mysql",
+    detection: {
+      headers: { server: /mysql/i },
+    },
+  },
+
+  // --- Infrastructure ---
+  {
+    name: "Docker",
+    category: "Infrastructure",
+    icon: "docker",
+    detection: {
+      headers: { server: /docker/i },
+    },
+  },
+  {
+    name: "Nginx",
+    category: "Infrastructure",
+    icon: "nginx",
+    detection: {
+      headers: { server: /nginx/i },
+    },
+  },
+  {
+    name: "Apache",
+    category: "Infrastructure",
+    icon: "apache",
+    detection: {
+      headers: { server: /Apache/i },
+    },
+  },
+  {
+    name: "Sentry",
+    category: "Monitoring",
+    icon: "sentry",
+    detection: {
+      script: /sentry\.(?:min\.)?js|@sentry\//i,
+      window: /Sentry\s*\(/i,
+    },
+  },
+  {
+    name: "Datadog",
+    category: "Monitoring",
+    icon: "datadog",
+    detection: {
+      script: /datadog-rum/i,
+      window: /DD_RUM/i,
+    },
+  },
+  {
+    name: "New Relic",
+    category: "Monitoring",
+    icon: "newrelic",
+    detection: {
+      script: /newrelic/i,
+      window: /newrelic/i,
+    },
+  },
+  {
+    name: "LogRocket",
+    category: "Monitoring",
+    icon: "logrocket",
+    detection: {
+      script: /logrocket/i,
+      window: /LogRocket/i,
+    },
+  },
+  {
+    name: "PostHog",
+    category: "Analytics",
+    icon: "posthog",
+    detection: {
+      script: /posthog/i,
+      window: /posthog/i,
+    },
+  },
+  {
+    name: "Heap",
+    category: "Analytics",
+    icon: "heap",
+    detection: {
+      script: /heapanalytics/i,
+      window: /heap\.load/i,
+    },
+  },
+  {
+    name: "FullStory",
+    category: "Analytics",
+    icon: "fullstory",
+    detection: {
+      script: /fullstory\.com/i,
+      window: /FS\.restart|_fs_/i,
+    },
+  },
+  {
+    name: "VWO",
+    category: "Analytics",
+    icon: "vwo",
+    detection: {
+      script: /vwo\.com/i,
+      window: /_vwo_code/i,
+    },
+  },
+  {
+    name: "LaunchDarkly",
+    category: "Feature Flags",
+    icon: "launchdarkly",
+    detection: {
+      script: /launchdarkly/i,
+      window: /LDClient/i,
+    },
+  },
+  {
+    name: "Kubernetes",
+    category: "Infrastructure",
+    icon: "k8s",
+    detection: {
+      headers: { server: /kube|eks/i },
+    },
+  },
+  {
+    name: "Clerk",
+    category: "Auth",
+    icon: "clerk",
+    detection: {
+      script: /\/clerk\./i,
+    },
+  },
   {
     name: "Redux",
     category: "State Management",
@@ -578,14 +853,6 @@ export const DETECTION_RULES: DetectionRule[] = [
   },
 
   // --- Auth ---
-  {
-    name: "Clerk",
-    category: "Auth",
-    icon: "clerk",
-    detection: {
-      script: /\/clerk\./i,
-    },
-  },
   {
     name: "Auth0",
     category: "Auth",
@@ -678,22 +945,30 @@ export const DETECTION_RULES: DetectionRule[] = [
 export const CATEGORY_ORDER: Record<string, number> = {
   Framework: 1,
   Library: 2,
-  Language: 3,
-  "CSS Framework": 4,
-  CSS: 5,
-  "Build Tool": 6,
-  CMS: 7,
-  Analytics: 8,
-  Hosting: 9,
-  CDN: 10,
-  "Font Service": 11,
-  "Icon Library": 12,
-  "Animation Library": 13,
-  "State Management": 14,
-  "3D Library": 15,
-  Auth: 16,
-  Payment: 17,
-  SEO: 18,
+  "Backend Framework": 3,
+  Language: 4,
+  "CSS Framework": 5,
+  CSS: 6,
+  "Build Tool": 7,
+  CMS: 8,
+  ORM: 9,
+  Database: 10,
+  API: 11,
+  Analytics: 12,
+  Monitoring: 13,
+  Hosting: 14,
+  CDN: 15,
+  Infrastructure: 16,
+  "Feature Flags": 17,
+  "Font Service": 18,
+  "Icon Library": 19,
+  "Animation Library": 20,
+  "State Management": 21,
+  "3D Library": 22,
+  Auth: 23,
+  Payment: 24,
+  SEO: 25,
+  Backend: 26,
 }
 
 export const ICON_MAP: Record<string, string> = {

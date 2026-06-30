@@ -39,7 +39,10 @@ export function TrendingList({ analyses, isDbData = false }: TrendingListProps) 
           </h2>
         </div>
         {isDbData && (
-          <button className="flex items-center gap-1 text-sm text-[#6366f1] transition-colors hover:text-[#5558e6]">
+          <button
+            onClick={() => router.push("/history")}
+            className="flex items-center gap-1 text-sm text-[#6366f1] transition-colors hover:text-[#5558e6]"
+          >
             View all <ArrowRight size={14} />
           </button>
         )}
