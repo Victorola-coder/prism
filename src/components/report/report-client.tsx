@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  GitCompare,
 } from "lucide-react"
 import { GlassCard } from "@/components/shared/glass-card"
 import { ScoreRing } from "@/components/shared/score-ring"
@@ -19,6 +20,8 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { ArchitectureDiagram } from "@/components/report/architecture-diagram"
 import { cn, extractDomain } from "@/lib/utils"
 
 interface AnalysisData {
@@ -114,10 +117,29 @@ export function ReportClient({ analysis }: ReportClientProps) {
                 <GradientText>{analysis.pageTitle ?? domain}</GradientText>
               </h1>
             </div>
-            <Button variant="secondary" size="sm">
-              <Share2 size={16} />
-              Share
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href)
+                }}
+              >
+                <Share2 size={16} />
+                Share
+              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm" disabled>
+                      <GitCompare size={16} />
+                      Compare
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Coming soon</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -223,6 +245,7 @@ export function ReportClient({ analysis }: ReportClientProps) {
             <TabsTrigger value="stack">Tech Stack</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="design">Design</TabsTrigger>
+            <TabsTrigger value="architecture">Architecture</TabsTrigger>
             <TabsTrigger value="ai">AI Summary</TabsTrigger>
           </TabsList>
 
@@ -466,6 +489,49 @@ export function ReportClient({ analysis }: ReportClientProps) {
                   </div>
                 </>
               )}
+            </GlassCard>
+          </TabsContent>
+
+          <TabsContent value="architecture">
+            <GlassCard>
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#06b6d4]/10">
+                  <GitCompare size={20} className="text-[#06b6d4]" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-[#fafafa]">Architecture Diagram</h3>
+                  <p className="text-xs text-[#52525b]">Visual overview of the technology stack</p>
+                </div>
+              </div>
+              <ArchitectureDiagram
+                technologies={analysis.technologies.map((t) => ({
+                  name: t.name,
+                  category: t.category,
+                }))}
+                hosting={analysis.architecture?.hosting}
+                cdn={analysis.architecture?.cdn}
+              />
+              <Separator className="my-6" />
+              <div className="grid gap-4 sm:grid-cols-3">
+                {analysis.architecture?.hosting && (
+                  <div className="rounded-lg border border-[#1f1f1f] bg-[#121212] p-4">
+                    <p className="mb-1 text-xs text-[#52525b]">HOSTING</p>
+                    <p className="text-sm font-medium text-[#fafafa]">{analysis.architecture.hosting}</p>
+                  </div>
+                )}
+                {analysis.architecture?.cdn && (
+                  <div className="rounded-lg border border-[#1f1f1f] bg-[#121212] p-4">
+                    <p className="mb-1 text-xs text-[#52525b]">CDN</p>
+                    <p className="text-sm font-medium text-[#fafafa]">{analysis.architecture.cdn}</p>
+                  </div>
+                )}
+                {analysis.architecture?.type && (
+                  <div className="rounded-lg border border-[#1f1f1f] bg-[#121212] p-4">
+                    <p className="mb-1 text-xs text-[#52525b]">FRAMEWORK</p>
+                    <p className="text-sm font-medium text-[#fafafa]">{analysis.architecture.type}</p>
+                  </div>
+                )}
+              </div>
             </GlassCard>
           </TabsContent>
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
+import { ErrorBoundary } from "@/components/shared/error-boundary"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -21,6 +22,17 @@ export const metadata: Metadata = {
   },
   description:
     "Instantly understand how any website is built. Framework, hosting, performance, design, and more.",
+  openGraph: {
+    title: "Prism — X-ray vision for the internet",
+    description: "Instantly understand how any website is built.",
+    siteName: "Prism",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Prism — X-ray vision for the internet",
+    description: "Instantly understand how any website is built.",
+  },
 }
 
 export default function RootLayout({
@@ -35,9 +47,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-[#0a0a0a] font-sans antialiased">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <ErrorBoundary>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ErrorBoundary>
       </body>
     </html>
   )

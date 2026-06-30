@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { formatUrl, extractDomain } from "@/lib/utils"
 import { runAnalysis } from "@/lib/analyzer"
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request)
+  const limit = checkRateLimit(ip, { maxRequests: 10, windowMs: 60000 })
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait before analyzing another site." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil(limit.resetIn / 1000)) } },
+    )
+  }
+
   try {
     const { url, takeScreenshot = false } = await request.json()
 
