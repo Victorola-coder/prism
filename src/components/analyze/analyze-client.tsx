@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Sparkles, CheckCircle2 } from "lucide-react"
+import { formatUrl } from "@/lib/utils"
+
 const STEPS = [
   "Connecting...",
   "Detecting technologies...",
@@ -22,22 +24,91 @@ const STEPS = [
 export function AnalyzeClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const url = searchParams.get("url")
+  const rawUrl = searchParams.get("url")
   const [currentStep, setCurrentStep] = useState(0)
   const [progress, setProgress] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
+  const [analysisId, setAnalysisId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const startedRef = useRef(false)
+  const pollRef = useRef<ReturnType<typeof setInterval>>(undefined)
 
   useEffect(() => {
-    if (!url) {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [])
+
+  const startPolling = (id: string) => {
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/analyze/status/${id}`)
+        const data = await res.json()
+
+        if (data.status === "completed") {
+          setProgress(100)
+          setIsComplete(true)
+          if (pollRef.current) clearInterval(pollRef.current)
+          setTimeout(() => router.push(`/report/${id}`), 500)
+          return
+        }
+
+        if (data.status === "failed") {
+          setError(data.error ?? "Analysis failed")
+          if (pollRef.current) clearInterval(pollRef.current)
+        }
+      } catch {
+        // retry on next interval
+      }
+    }
+
+    poll()
+    pollRef.current = setInterval(poll, 2000)
+  }
+
+  useEffect(() => {
+    if (!rawUrl) {
       router.push("/")
       return
     }
-  }, [url, router])
+  }, [rawUrl, router])
 
   useEffect(() => {
-    if (!url) return
+    if (!rawUrl || startedRef.current) return
+    startedRef.current = true
 
-    const totalDuration = 8000
+    const url = formatUrl(rawUrl)
+
+    fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.id) {
+          setAnalysisId(data.id)
+
+          if (data.status === "completed") {
+            setIsComplete(true)
+            setTimeout(() => router.push(`/report/${data.id}`), 500)
+            return
+          }
+
+          startPolling(data.id)
+        } else {
+          setError(data.error ?? "Failed to start analysis")
+        }
+      })
+      .catch((err) => {
+        setError(err.message ?? "Network error")
+      })
+  }, [rawUrl, router]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!rawUrl || analysisId) return
+
+    const totalDuration = 10000
     const steps = STEPS.length
     const interval = totalDuration / steps
 
@@ -59,22 +130,30 @@ export function AnalyzeClient() {
       })
     }, totalDuration / 100)
 
-    const completeTimer = setTimeout(() => {
-      setProgress(100)
-      setIsComplete(true)
-      setTimeout(() => {
-        router.push(`/report/demo?url=${encodeURIComponent(url!)}`)
-      }, 500)
-    }, totalDuration + 1000)
-
     return () => {
       clearInterval(stepTimer)
       clearInterval(progressTimer)
-      clearTimeout(completeTimer)
     }
-  }, [url, router])
+  }, [rawUrl, analysisId])
 
-  if (!url) return null
+  if (!rawUrl) return null
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4">
+        <div className="text-center">
+          <p className="mb-2 text-lg font-medium text-[#ef4444]">Analysis Failed</p>
+          <p className="text-sm text-[#a1a1aa]">{error}</p>
+          <button
+            onClick={() => router.push("/")}
+            className="mt-4 text-sm text-[#6366f1] hover:text-[#5558e6]"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4">
@@ -98,7 +177,7 @@ export function AnalyzeClient() {
 
             <div className="text-center">
               <p className="mb-1 text-lg text-[#a1a1aa]">Analyzing</p>
-              <p className="max-w-sm truncate text-sm text-[#52525b]">{url}</p>
+              <p className="max-w-sm truncate text-sm text-[#52525b]">{rawUrl}</p>
             </div>
 
             <div className="flex flex-col items-center gap-3">
