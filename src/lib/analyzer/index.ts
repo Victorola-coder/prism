@@ -187,7 +187,7 @@ export async function runAnalysis(options: AnalysisOptions) {
             lcp: lighthouseResult.lcp,
             fid: lighthouseResult.fid,
             cls: lighthouseResult.cls,
-            raw: lighthouseResult.raw ? JSON.parse(JSON.stringify(lighthouseResult.raw)) : {},
+            raw: lighthouseResult.raw ? JSON.stringify(lighthouseResult.raw) : null,
           },
         })
       }
@@ -211,7 +211,7 @@ export async function runAnalysis(options: AnalysisOptions) {
           accent: colors.accent,
           background: colors.background,
           text: colors.text,
-          palette: colors.palette,
+          palette: JSON.stringify(colors.palette),
         },
       })
 
@@ -221,12 +221,12 @@ export async function runAnalysis(options: AnalysisOptions) {
           hasDesignSystem,
           framework: technologyMatches.find((t) => t.category === "Framework")?.name,
           components: technologyMatches.length,
-          tokens: {
+          tokens: JSON.stringify({
             colors: colors.palette,
             fonts: fonts.map((f) => f.family),
             spacing: "4px base unit",
             borderRadius: "12px",
-          },
+          }),
         },
       })
 
@@ -236,7 +236,7 @@ export async function runAnalysis(options: AnalysisOptions) {
           type: technologyMatches.find((t) => t.category === "Framework")?.name ?? "Unknown",
           hosting: hostingTech?.name,
           cdn: cdnTech?.name,
-          diagram: {
+          diagram: JSON.stringify({
             technologies: technologyMatches.slice(0, 10).map((t) => t.name),
             hosting: hostingTech?.name,
             cdn: cdnTech?.name,
@@ -244,7 +244,7 @@ export async function runAnalysis(options: AnalysisOptions) {
               technologyMatches.some((t) => t.name === "Next.js" || t.name === "Nuxt.js")
                 ? "SSR + Static"
                 : "Client-side",
-          },
+          }),
         },
       })
 
@@ -257,7 +257,7 @@ export async function runAnalysis(options: AnalysisOptions) {
             data: {
               analysisId,
               summary: aiSummary.summary,
-              insights: aiSummary.insights,
+              insights: JSON.stringify(aiSummary.insights),
             },
           })
         } catch (error) {
@@ -267,7 +267,7 @@ export async function runAnalysis(options: AnalysisOptions) {
             data: {
               analysisId,
               summary: generateFallbackSummary(url, technologyMatches, overallScore),
-              insights: generateFallbackInsights(technologyMatches, overallScore),
+              insights: JSON.stringify(generateFallbackInsights(technologyMatches, overallScore)),
             },
           })
         }
@@ -276,7 +276,7 @@ export async function runAnalysis(options: AnalysisOptions) {
           data: {
             analysisId,
             summary: generateFallbackSummary(url, technologyMatches, overallScore),
-            insights: generateFallbackInsights(technologyMatches, overallScore),
+            insights: JSON.stringify(generateFallbackInsights(technologyMatches, overallScore)),
           },
         })
       }

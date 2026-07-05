@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
               accent: existing.colors.accent,
               background: existing.colors.background,
               text: existing.colors.text,
-              palette: existing.colors.palette as string[],
+              palette: existing.colors.palette ? JSON.parse(existing.colors.palette) : undefined,
             }
           : undefined,
         designSystem: existing.designSystem
@@ -96,13 +96,13 @@ export async function POST(request: NextRequest) {
               hasDesignSystem: existing.designSystem.hasDesignSystem,
               framework: existing.designSystem.framework,
               components: existing.designSystem.components,
-              tokens: existing.designSystem.tokens as Record<string, string>,
+              tokens: existing.designSystem.tokens ? JSON.parse(existing.designSystem.tokens) : undefined,
             }
           : undefined,
         aiSummary: existing.aiSummary
           ? {
               summary: existing.aiSummary.summary,
-              insights: existing.aiSummary.insights as string[],
+              insights: existing.aiSummary.insights ? JSON.parse(existing.aiSummary.insights) : undefined,
             }
           : undefined,
         architecture: existing.architecture

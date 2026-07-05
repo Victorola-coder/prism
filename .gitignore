@@ -40,6 +40,9 @@ yarn-error.log*
 # package manager locks
 bun.lock
 
+# database
+prisma/dev.db
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

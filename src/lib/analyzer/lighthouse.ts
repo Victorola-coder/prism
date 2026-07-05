@@ -72,14 +72,12 @@ export async function runLighthouse(url: string): Promise<LighthouseResult | nul
       lcp: extractNumericValue(lcpAudit),
       fid: extractNumericValue(fidAudit),
       cls: extractNumericValue(clsAudit),
-      raw: JSON.parse(
-        JSON.stringify({
-          fetchTime: lhr.fetchTime,
-          lighthouseVersion: lhr.lighthouseVersion,
-          requestedUrl: lhr.requestedUrl,
-          finalUrl: lhr.finalUrl,
-        }),
-      ),
+      raw: JSON.stringify({
+        fetchTime: lhr.fetchTime,
+        lighthouseVersion: lhr.lighthouseVersion,
+        requestedUrl: lhr.requestedUrl,
+        finalUrl: lhr.finalUrl,
+      }),
     }
   } catch (error) {
     console.warn("Lighthouse audit failed:", error instanceof Error ? error.message : error)

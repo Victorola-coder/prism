@@ -77,7 +77,7 @@ export async function GET(
             accent: analysis.colors.accent,
             background: analysis.colors.background,
             text: analysis.colors.text,
-            palette: analysis.colors.palette as string[],
+            palette: analysis.colors.palette ? JSON.parse(analysis.colors.palette) : undefined,
           }
         : undefined,
       designSystem: analysis.designSystem
@@ -85,13 +85,13 @@ export async function GET(
             hasDesignSystem: analysis.designSystem.hasDesignSystem,
             framework: analysis.designSystem.framework,
             components: analysis.designSystem.components,
-            tokens: analysis.designSystem.tokens as Record<string, string>,
+            tokens: analysis.designSystem.tokens ? JSON.parse(analysis.designSystem.tokens) : undefined,
           }
         : undefined,
       aiSummary: analysis.aiSummary
         ? {
             summary: analysis.aiSummary.summary,
-            insights: analysis.aiSummary.insights as string[],
+            insights: analysis.aiSummary.insights ? JSON.parse(analysis.aiSummary.insights) : undefined,
           }
         : undefined,
       architecture: analysis.architecture

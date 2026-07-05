@@ -3,21 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum AnalysisStatus {
-  pending
-  analyzing
-  completed
-  failed
-}
-
 model Analysis {
-  id             String          @id @default(cuid())
+  id             String   @id @default(cuid())
   url            String
-  status         AnalysisStatus  @default(pending)
+  status         String   @default("pending")
   error          String?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -59,7 +52,7 @@ model LighthouseResult {
   lcp           Float?
   fid           Float?
   cls           Float?
-  raw           Json?
+  raw           String?
 
   analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
@@ -84,7 +77,7 @@ model ColorPalette {
   accent     String?
   background String?
   text       String?
-  palette    Json?
+  palette    String?
 
   analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
@@ -95,7 +88,7 @@ model DesignSystem {
   hasDesignSystem Boolean @default(false)
   framework       String?
   components      Int?
-  tokens          Json?
+  tokens          String?
   analysis         Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
 
@@ -103,7 +96,7 @@ model AISummary {
   id         String  @id @default(cuid())
   analysisId String  @unique
   summary    String
-  insights   Json?
+  insights   String?
   analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 }
 
@@ -111,7 +104,7 @@ model Architecture {
   id         String @id @default(cuid())
   analysisId String @unique
   type       String?
-  diagram    Json?
+  diagram    String?
   hosting    String?
   cdn        String?
   analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
