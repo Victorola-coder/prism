@@ -153,6 +153,20 @@ export function ReportClient({ analysis }: ReportClientProps) {
               <Badge variant="gradient">+{analysis.technologies.length - 6} more</Badge>
             )}
           </div>
+
+          {analysis.screenshotUrl && (
+            <div className="relative mt-6 overflow-hidden rounded-xl border border-[#1f1f1f]">
+              <img
+                src={analysis.screenshotUrl}
+                alt={`Screenshot of ${analysis.pageTitle ?? analysis.url}`}
+                className="w-full object-cover"
+                style={{ maxHeight: "400px" }}
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a0a0a] to-transparent p-4 pt-12">
+                <p className="text-xs text-[#52525b]">Page preview</p>
+              </div>
+            </div>
+          )}
         </motion.div>
 
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
